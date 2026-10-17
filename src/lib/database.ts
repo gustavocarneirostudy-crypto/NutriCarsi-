@@ -166,6 +166,65 @@ export async function getPacientesByNutri(nutricionistaId: string): Promise<Paci
   }))
 }
 
+export async function createPaciente(paciente: Omit<Paciente, 'id' | 'created_at' | 'total_consultas' | 'ultima_consulta'>): Promise<Paciente> {
+  const sql = getDb()
+  const rows = await sql`
+    INSERT INTO public.pacientes (
+      nutricionista_id,
+      nome,
+      data_nascimento,
+      sexo,
+      whatsapp,
+      telefone,
+      email,
+      peso_inicial,
+      altura,
+      objetivos,
+      objetivo_texto,
+      nivel_atividade,
+      patologias,
+      restricoes_alimentares,
+      alergias,
+      medicamentos,
+      suplementos,
+      refeicoes_por_dia,
+      horario_acorda,
+      horario_dorme,
+      litros_agua,
+      atividade_fisica,
+      atividade_fisica_descricao,
+      observacoes
+    ) VALUES (
+      ${paciente.nutricionista_id},
+      ${paciente.nome},
+      ${paciente.data_nascimento || null},
+      ${paciente.sexo || null},
+      ${paciente.whatsapp || null},
+      ${paciente.telefone || null},
+      ${paciente.email || null},
+      ${paciente.peso_inicial != null && !isNaN(Number(paciente.peso_inicial)) ? Number(paciente.peso_inicial) : null},
+      ${paciente.altura != null && !isNaN(Number(paciente.altura)) ? Number(paciente.altura) : null},
+      ${paciente.objetivos && paciente.objetivos.length > 0 ? paciente.objetivos : null},
+      ${paciente.objetivo_texto || null},
+      ${paciente.nivel_atividade || null},
+      ${paciente.patologias && paciente.patologias.length > 0 ? paciente.patologias : null},
+      ${paciente.restricoes_alimentares && paciente.restricoes_alimentares.length > 0 ? paciente.restricoes_alimentares : null},
+      ${paciente.alergias && paciente.alergias.length > 0 ? paciente.alergias : null},
+      ${paciente.medicamentos || null},
+      ${paciente.suplementos || null},
+      ${paciente.refeicoes_por_dia != null && !isNaN(Number(paciente.refeicoes_por_dia)) ? Number(paciente.refeicoes_por_dia) : null},
+      ${paciente.horario_acorda || null},
+      ${paciente.horario_dorme || null},
+      ${paciente.litros_agua != null && !isNaN(Number(paciente.litros_agua)) ? Number(paciente.litros_agua) : null},
+      ${paciente.atividade_fisica ?? null},
+      ${paciente.atividade_fisica_descricao || null},
+      ${paciente.observacoes || null}
+    )
+    RETURNING *;
+  `
+  return rows[0] as Paciente
+}
+
 export async function getPacienteById(id: string, nutricionistaId: string): Promise<{ paciente: Paciente; consultas: Consulta[] } | null> {
   const sql = getDb()
   const pacienteRows = await sql`
@@ -190,3 +249,5 @@ export async function getPacienteById(id: string, nutricionistaId: string): Prom
     })) as Consulta[],
   }
 }
+
+

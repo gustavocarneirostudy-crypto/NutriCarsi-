@@ -7,6 +7,7 @@ import { Login } from '@/pages/Login'
 import { Register } from '@/pages/Register'
 import { Dashboard } from '@/pages/Dashboard'
 import { Pacientes } from '@/pages/Pacientes'
+import { PacienteNovo } from '@/pages/PacienteNovo'
 import { PacientePerfil } from '@/pages/PacientePerfil'
 
 export function App() {
@@ -43,6 +44,14 @@ export function App() {
             element={
               <ProtectedRoute>
                 <Pacientes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pacientes/novo"
+            element={
+              <ProtectedRoute>
+                <PacienteNovo />
               </ProtectedRoute>
             }
           />
